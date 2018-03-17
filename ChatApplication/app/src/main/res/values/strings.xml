@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Chat Application</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">LOGIN</string>
+    <string name="register">REGISTER</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="email">E-mail</string>
+    <string name="gender">gender</string>
+    <string name="accept_notifications">Accept Notifications</string>
+    <string name="log_out">LOG OUT</string>
+    <string name="send">SEND</string>
+    <string name="message_text">message text</string>
+    <string name="my_friend">my friend</string>
+    <string name="message_sent">Message is sent</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="birth_date">Birth Date</string>
+</resources>
