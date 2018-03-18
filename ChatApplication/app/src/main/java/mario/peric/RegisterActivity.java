@@ -20,6 +20,10 @@ import java.util.Date;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
 
+    private static final int MIN_PASSWORD_LENGTH = 5;
+    private static final int MIN_EMAIL_LENGTH = 5;
+    private static final int MIN_USERNAME_LENGTH = 1;
+
     EditText username, password, firstName, lastName, email;
     Spinner gender;
     CheckBox notifications;
@@ -77,7 +81,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        if (username.length() > 0 && password.length() > 5 && email.length() > 5) {
+        if (username.length() >= MIN_USERNAME_LENGTH &&
+                password.length() >= MIN_PASSWORD_LENGTH &&
+                email.length() > MIN_EMAIL_LENGTH) {
             buttonRegister.setEnabled(true);
         } else {
             buttonRegister.setEnabled(false);

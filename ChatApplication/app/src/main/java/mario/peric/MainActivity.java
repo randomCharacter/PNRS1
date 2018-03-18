@@ -9,7 +9,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
+
+    private static final int MIN_USERNAME_LENGTH = 1;
+    private static final int MIN_PASSWORD_LENGTH = 5;
 
     Button buttonRegister, buttonLogin;
     EditText username, password;
@@ -26,31 +29,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         buttonLogin.setEnabled(false);
 
-        TextWatcher checkInput = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (username.getText().length() > 0 && password.getText().length() > 5) {
-                    buttonLogin.setEnabled(true);
-                } else {
-                    buttonLogin.setEnabled(false);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        };
-
         buttonRegister.setOnClickListener(this);
         buttonLogin.setOnClickListener(this);
-        username.addTextChangedListener(checkInput);
-        password.addTextChangedListener(checkInput);
+        username.addTextChangedListener(this);
+        password.addTextChangedListener(this);
     }
 
     @Override
@@ -65,5 +47,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(registerIntent);
                 break;
         }
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        if (username.getText().length() >= MIN_USERNAME_LENGTH &&
+                password.getText().length() >= MIN_PASSWORD_LENGTH) {
+            buttonLogin.setEnabled(true);
+        } else {
+            buttonLogin.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void afterTextChanged(Editable editable) {
+
     }
 }
