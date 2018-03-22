@@ -18,7 +18,7 @@ import java.lang.reflect.Array;
 import java.util.Calendar;
 import java.util.Date;
 
-public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
+public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, View.OnFocusChangeListener, TextWatcher {
 
     private static final int MIN_PASSWORD_LENGTH = 5;
     private static final int MIN_EMAIL_LENGTH = 5;
@@ -62,6 +62,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         password.addTextChangedListener(this);
         email.addTextChangedListener(this);
         buttonRegister.setOnClickListener(this);
+        username.setOnFocusChangeListener(this);
+        password.setOnFocusChangeListener(this);
+        email.setOnFocusChangeListener(this);
     }
 
     @Override
@@ -93,5 +96,28 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void afterTextChanged(Editable editable) {
 
+    }
+
+    @Override
+    public void onFocusChange(View view, boolean hasFocus) {
+        if (!hasFocus) {
+            switch (view.getId()) {
+                case R.id.register_username:
+                    if (username.length() < MIN_USERNAME_LENGTH) {
+                        username.setError(getString(R.string.invalid_value));
+                    }
+                    break;
+                case R.id.register_password:
+                    if (password.length() < MIN_PASSWORD_LENGTH) {
+                        password.setError(getString(R.string.invalid_value));
+                    }
+                    break;
+                case R.id.register_email:
+                    if (email.length() < MIN_EMAIL_LENGTH) {
+                        email.setError(getString(R.string.invalid_value));
+                    }
+                    break;
+            }
+        }
     }
 }
