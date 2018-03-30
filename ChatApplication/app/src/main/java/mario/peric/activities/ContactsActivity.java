@@ -1,4 +1,4 @@
-package mario.peric;
+package mario.peric.activities;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -7,7 +7,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import mario.peric.R;
 
 public class ContactsActivity extends AppCompatActivity implements View.OnClickListener {
 
