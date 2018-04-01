@@ -5,31 +5,35 @@ import java.util.Date;
 
 public class Message {
 
-    private User sender;
-    private User receiver;
-    private String message;
-    private Date time;
+    private Contact mSender;
+    private Contact mReceiver;
+    private String mMessage;
+    private Date mTime;
 
-    public Message(User sender, User receiver, String message) {
-        this.sender = sender;
-        this.receiver = receiver;
-        this.message = message;
-        this.time = Calendar.getInstance().getTime();
+    public Message(Contact sender, Contact receiver, String message) {
+        mSender = sender;
+        mReceiver = receiver;
+        mMessage = message;
+        mTime = Calendar.getInstance().getTime();
     }
 
-    public User getSender() {
-        return sender;
+    public Contact getSender() {
+        return mSender;
     }
 
-    public User getReceiver() {
-        return receiver;
+    public Contact getReceiver() {
+        return mReceiver;
+    }
+
+    public void setSender(Contact sender) {
+        mSender = sender;
     }
 
     public String getMessage() {
-        return message;
+        return mMessage;
     }
 
     public Date getTime() {
-        return time;
+        return mTime;
     }
 }

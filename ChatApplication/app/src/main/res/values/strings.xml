@@ -18,4 +18,19 @@
     <string name="female">Female</string>
     <string name="birth_date">Birth Date</string>
     <string name="invalid_value">Invalid value</string>
+    <string name="sample_name">John Doe</string>
+    <string name="sample_letter">J</string>
+    <string name="sample_message">Sample message</string>
+    <string name="sample_username">username</string>
+    <string name="sample_password">password</string>
+    <string name="sample_email">email@example.com</string>
+    <string name="sample_fname1">John</string>
+    <string name="sample_lname1">Doe</string>
+    <string name="sample_fname2">Jane</string>
+    <string name="sample_lname2">Doe</string>
+    <string name="sample_fname3">Petar</string>
+    <string name="sample_lname3">Petrovic</string>
+    <string name="sample_fname4">Milica</string>
+    <string name="sample_lname4">Damjanovic</string>
+    <string name="my_chat_list">My chat list</string>
 </resources>

@@ -11,36 +11,36 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="right">
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/log_out"
-                    android:id="@+id/button_log_out"/>
-        </LinearLayout>
+            android:gravity="end">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="left"
-            android:orientation="horizontal">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/contact_image"
-                android:src="@mipmap/ic_launcher_round"/>
             <TextView
                 android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/my_chat_list"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/button_log_out"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteY="48dp" />
+
+            <Button
+                android:id="@+id/button_log_out"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginLeft="10dp"
-                android:textSize="30sp"
-                android:text="@string/my_friend"
-                android:id="@+id/contact_name"/>
-        </LinearLayout>
+                android:text="@string/log_out"
+                app:layout_constraintRight_toRightOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/contacts">
+
+        </ListView>
 
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

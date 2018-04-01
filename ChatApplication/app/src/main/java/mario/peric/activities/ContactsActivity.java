@@ -5,29 +5,47 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.ListView;
+
+import java.util.Calendar;
+import java.util.Date;
 
 import mario.peric.R;
+import mario.peric.adapters.ContactAdapter;
+import mario.peric.models.Contact;
 
 public class ContactsActivity extends AppCompatActivity implements View.OnClickListener {
 
-    Button buttonLogout;
-    ImageView contact;
-    TextView contactName;
+    private Button mButtonLogout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
 
-        buttonLogout = findViewById(R.id.button_log_out);
-        contact = findViewById(R.id.contact_image);
-        contactName = findViewById(R.id.contact_name);
+        mButtonLogout = findViewById(R.id.button_log_out);
 
-        contact.setOnClickListener(this);
-        contactName.setOnClickListener(this);
-        buttonLogout.setOnClickListener(this);
+        mButtonLogout.setOnClickListener(this);
+
+        ContactAdapter contactAdapter = new ContactAdapter(this);
+
+        Date date = Calendar.getInstance().getTime();
+
+        contactAdapter.addUser(new Contact(getString(R.string.sample_username), getString(R.string.sample_password),
+                getString(R.string.sample_email), getString(R.string.sample_fname1), getString(R.string.sample_lname1),
+                getString(R.string.male), false, date));
+        contactAdapter.addUser(new Contact(getString(R.string.sample_username), getString(R.string.sample_password),
+                getString(R.string.sample_email), getString(R.string.sample_fname2), getString(R.string.sample_lname2),
+                getString(R.string.male), false, date));
+        contactAdapter.addUser(new Contact(getString(R.string.sample_username), getString(R.string.sample_password),
+                getString(R.string.sample_email), getString(R.string.sample_fname3), getString(R.string.sample_lname3),
+                getString(R.string.male), false, date));
+        contactAdapter.addUser(new Contact(getString(R.string.sample_username), getString(R.string.sample_password),
+                getString(R.string.sample_email), getString(R.string.sample_fname4), getString(R.string.sample_lname4),
+                getString(R.string.male), false, date));
+
+        ListView contacts = findViewById(R.id.contacts);
+        contacts.setAdapter(contactAdapter);
     }
 
     @Override
@@ -37,11 +55,6 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                 Intent logoutIntent = new Intent(getApplicationContext(), MainActivity.class);
                 logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(logoutIntent);
-                break;
-            case R.id.contact_image:
-            case R.id.contact_name:
-                Intent messageIntent = new Intent(this, MessageActivity.class);
-                startActivity(messageIntent);
                 break;
         }
     }

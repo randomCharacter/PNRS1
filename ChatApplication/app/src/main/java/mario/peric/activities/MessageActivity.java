@@ -8,30 +8,46 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import mario.peric.R;
+import mario.peric.adapters.MessageAdapter;
+import mario.peric.models.Contact;
+import mario.peric.models.Message;
 
 public class MessageActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
 
-    Button buttonLogout, buttonSend;
-    EditText message;
+    private Button mButtonLogout, mButtonSend;
+    private EditText mMessage;
+    private MessageAdapter mMessageAdapter;
+    private TextView mContactName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
 
-        buttonLogout = findViewById(R.id.button_log_out);
-        buttonSend = findViewById(R.id.button_send);
-        message = findViewById(R.id.message_text);
+        mButtonLogout = findViewById(R.id.button_log_out);
+        mButtonSend = findViewById(R.id.button_send);
+        mMessage = findViewById(R.id.message_text);
+        mContactName = findViewById(R.id.contact_name);
 
-        buttonSend.setEnabled(false);
+        mContactName.setText(getIntent().getStringExtra(Contact.NAME));
 
-        message.addTextChangedListener(this);
+        mButtonSend.setEnabled(false);
 
-        buttonSend.setOnClickListener(this);
-        buttonLogout.setOnClickListener(this);
+        mMessage.addTextChangedListener(this);
+
+        mButtonSend.setOnClickListener(this);
+        mButtonLogout.setOnClickListener(this);
+
+        mMessageAdapter = new MessageAdapter(this);
+
+        ListView messages = findViewById(R.id.messages);
+
+        messages.setAdapter(mMessageAdapter);
     }
 
     @Override
@@ -44,8 +60,11 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.button_send:
                 Toast.makeText(getApplicationContext(), R.string.message_sent, Toast.LENGTH_LONG).show();
-                message.setText("");
-                buttonSend.setEnabled(false);
+                Message message = new Message(null, null, mMessage.getText().toString());
+                mMessageAdapter.addMessage(message);
+                mMessageAdapter.notifyDataSetChanged();
+                mMessage.setText("");
+                mButtonSend.setEnabled(false);
                 break;
         }
     }
@@ -58,9 +77,9 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
         if (charSequence.length() != 0) {
-            buttonSend.setEnabled(true);
+            mButtonSend.setEnabled(true);
         } else {
-            buttonSend.setEnabled(false);
+            mButtonSend.setEnabled(false);
         }
     }
 
