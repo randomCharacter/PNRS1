@@ -1,16 +1,11 @@
 package mario.peric.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -30,7 +25,7 @@ public class MessageAdapter extends BaseAdapter implements View.OnLongClickListe
     }
 
     public void addMessage(Message message) {
-        // Set non-null sender to every second message in order to mark it as received message
+        // Set non-null sender to every second message_sent in order to mark it as received message
         if (getCount() % 2 == 1) {
             message.setSender(new Contact(null,null,null,null,null,null, false, null));
         }
@@ -61,32 +56,31 @@ public class MessageAdapter extends BaseAdapter implements View.OnLongClickListe
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
+
+        Message message = (Message) getItem(i);
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(
                     Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.view_message, null);
             MessageHolder holder = new MessageHolder();
             holder.message = view.findViewById(R.id.message);
-            holder.messageContainer = view.findViewById(R.id.message_container);
 
             view.setTag(holder);
         }
 
-        Message message = (Message) getItem(i);
         MessageHolder holder = (MessageHolder) view.getTag();
+
+        if (message.getSender() != null) {
+            holder.message.setBackground(view.getResources().getDrawable(R.drawable.message_sent));
+            holder.message.setGravity(Gravity.END);
+        } else {
+            holder.message.setBackground(view.getResources().getDrawable(R.drawable.message_received));
+            holder.message.setGravity(Gravity.START);
+        }
 
         holder.message.setTag(i);
         holder.message.setOnLongClickListener(this);
         holder.message.setText(message.getMessage());
-
-        // Check if message is marked as received
-        if (message.getSender() != null) {
-            holder.message.setBackgroundColor(view.getResources().getColor(R.color.colorBackgroundMessageReceived));
-            holder.message.setGravity(Gravity.START);
-        } else {
-            holder.message.setBackgroundColor(view.getResources().getColor(R.color.colorBackgroundMessageSent));
-            holder.message.setGravity(Gravity.END);
-        }
 
         return view;
     }
@@ -106,6 +100,5 @@ public class MessageAdapter extends BaseAdapter implements View.OnLongClickListe
 
     private class MessageHolder {
         public TextView message;
-        public RelativeLayout messageContainer;
     }
 }
