@@ -33,4 +33,5 @@
     <string name="sample_fname4">Milica</string>
     <string name="sample_lname4">Damjanovic</string>
     <string name="my_chat_list">My chat list</string>
+    <string name="open_conversation">Open conversation</string>
 </resources>

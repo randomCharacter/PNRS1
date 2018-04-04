@@ -20,6 +20,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
+                android:layout_margin="10dp"
+                android:textSize="20sp"
                 android:text="@string/my_chat_list"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -36,9 +38,9 @@
         </android.support.constraint.ConstraintLayout>
 
         <ListView
+            android:id="@+id/contacts"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/contacts">
+            android:layout_height="wrap_content">
 
         </ListView>
 

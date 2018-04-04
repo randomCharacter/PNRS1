@@ -69,8 +69,8 @@ public class ContactAdapter extends BaseAdapter implements View.OnClickListener 
             view.setTag(holder);
 
             Random random = new Random();
-            holder.firstLetter.setBackgroundColor(Color.argb(255, random.nextInt(256),
-                    random.nextInt(100), random.nextInt(150)));
+            holder.firstLetter.setBackgroundColor(Color.argb(255, random.nextInt(210),
+                    random.nextInt(210), random.nextInt(210)));
         }
 
         Contact contact = (Contact) getItem(i);

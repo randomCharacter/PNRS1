@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -57,25 +58,26 @@ public class MessageAdapter extends BaseAdapter implements View.OnLongClickListe
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
 
-        Message message = (Message) getItem(i);
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(
                     Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.view_message, null);
             MessageHolder holder = new MessageHolder();
             holder.message = view.findViewById(R.id.message);
+            holder.messageContainer = view.findViewById(R.id.message_container);
 
             view.setTag(holder);
         }
 
         MessageHolder holder = (MessageHolder) view.getTag();
+        Message message = (Message) getItem(i);
 
         if (message.getSender() != null) {
             holder.message.setBackground(view.getResources().getDrawable(R.drawable.message_sent));
-            holder.message.setGravity(Gravity.END);
+            holder.messageContainer.setGravity(Gravity.END);
         } else {
             holder.message.setBackground(view.getResources().getDrawable(R.drawable.message_received));
-            holder.message.setGravity(Gravity.START);
+            holder.messageContainer.setGravity(Gravity.START);
         }
 
         holder.message.setTag(i);
@@ -99,6 +101,7 @@ public class MessageAdapter extends BaseAdapter implements View.OnLongClickListe
     }
 
     private class MessageHolder {
-        public TextView message;
+        public TextView message = null;
+        public RelativeLayout messageContainer = null;
     }
 }
