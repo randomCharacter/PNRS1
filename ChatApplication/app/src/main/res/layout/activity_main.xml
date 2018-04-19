@@ -16,22 +16,24 @@
             android:layout_weight="1">
 
             <EditText
+                android:id="@+id/username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"
                 android:layout_marginLeft="50dp"
                 android:layout_marginRight="50dp"
-                android:hint="@string/username"
-                android:id="@+id/username"/>
+                android:drawableLeft="@drawable/ic_user"
+                android:hint="@string/username"/>
             <EditText
+                android:id="@+id/password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"
                 android:layout_marginLeft="50dp"
                 android:layout_marginRight="50dp"
+                android:drawableLeft="@drawable/ic_password"
                 android:inputType="textPassword"
-                android:hint="@string/password"
-                android:id="@+id/password"/>
+                android:hint="@string/password"/>
         </LinearLayout>
 
 
@@ -42,24 +44,24 @@
             android:layout_gravity="center"
             android:layout_weight="1">
             <Button
+                android:id="@+id/button_login"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="40dp"
-                android:text="@string/login"
-                android:id="@+id/button_login"/>
+                android:text="@string/login"/>
 
             <Button
+                android:id="@+id/button_register"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="40dp"
-                android:text="@string/register"
-                android:id="@+id/button_register"/>
+                android:text="@string/register"/>
         </LinearLayout>
 
     </LinearLayout>
