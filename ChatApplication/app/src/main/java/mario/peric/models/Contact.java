@@ -3,7 +3,14 @@ package mario.peric.models;
 import java.util.Date;
 
 public class Contact {
-    public static final String NAME = "name";
+
+    public static final String ID = "id";
+
+    private int mId;
+
+    public int getId() {
+        return mId;
+    }
 
     private String mUsername;
     private String mPassword;
@@ -14,9 +21,10 @@ public class Contact {
     private boolean mNotifications;
     private Date mBirthday;
 
-    public Contact(String username, String password, String email,
+    public Contact(int id, String username, String password, String email,
                    String firstName, String lastName, String gender,
                    boolean notifications, Date birthday) {
+        mId = id;
         mUsername = username;
         mPassword = password;
         mEmail = email;
@@ -25,6 +33,13 @@ public class Contact {
         mGender = gender;
         mNotifications = notifications;
         mBirthday = birthday;
+    }
+
+    public Contact(int id, String username, String firstName, String lastName) {
+        mId = id;
+        mUsername = username;
+        mFirstName = firstName;
+        mLastName = lastName;
     }
 
     public String getUsername() {

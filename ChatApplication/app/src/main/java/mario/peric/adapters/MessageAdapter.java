@@ -1,6 +1,7 @@
 package mario.peric.adapters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,24 +13,24 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import mario.peric.R;
+import mario.peric.helpers.MessageDBHelper;
 import mario.peric.models.Contact;
 import mario.peric.models.Message;
+import mario.peric.utils.Preferences;
 
 public class MessageAdapter extends BaseAdapter implements View.OnLongClickListener {
 
     private Context mContext;
     private ArrayList<Message> mMessages;
+    private MessageDBHelper mHelper;
 
     public MessageAdapter(Context context) {
         mContext = context;
         mMessages = new ArrayList<>();
+        mHelper = new MessageDBHelper(context);
     }
 
     public void addMessage(Message message) {
-        // Set non-null sender to every second message_sent in order to mark it as received message
-        if (getCount() % 2 == 1) {
-            message.setSender(new Contact(null,null,null,null,null,null, false, null));
-        }
         mMessages.add(message);
     }
 
@@ -72,7 +73,10 @@ public class MessageAdapter extends BaseAdapter implements View.OnLongClickListe
         MessageHolder holder = (MessageHolder) view.getTag();
         Message message = (Message) getItem(i);
 
-        if (message.getSender() != null) {
+        SharedPreferences sharedPref = mContext.getSharedPreferences(Preferences.NAME, Context.MODE_PRIVATE);
+        int loggedInUserId = sharedPref.getInt(Preferences.USER_LOGGED_IN, -1);
+
+        if (message.getSender().getId() == loggedInUserId) {
             holder.message.setBackground(view.getResources().getDrawable(R.drawable.message_sent));
             holder.messageContainer.setGravity(Gravity.END);
         } else {
@@ -92,6 +96,8 @@ public class MessageAdapter extends BaseAdapter implements View.OnLongClickListe
         switch (view.getId()) {
             case R.id.message:
                 int i = Integer.parseInt(view.getTag().toString());
+                Message message = mMessages.get(i);
+                mHelper.deleteMessage(message.getId());
                 mMessages.remove(i);
                 notifyDataSetChanged();
                 return true;

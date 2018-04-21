@@ -5,12 +5,19 @@ import java.util.Date;
 
 public class Message {
 
+    private int mId;
+
+    public int getId() {
+        return mId;
+    }
+
     private Contact mSender;
     private Contact mReceiver;
     private String mMessage;
     private Date mTime;
 
-    public Message(Contact sender, Contact receiver, String message) {
+    public Message(int id, Contact sender, Contact receiver, String message) {
+        mId = id;
         mSender = sender;
         mReceiver = receiver;
         mMessage = message;

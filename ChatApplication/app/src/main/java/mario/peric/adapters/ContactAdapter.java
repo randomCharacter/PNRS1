@@ -27,7 +27,7 @@ public class ContactAdapter extends BaseAdapter implements View.OnClickListener 
         mContacts = new ArrayList<>();
     }
 
-    public void addUser(Contact contact) {
+    public void addContact(Contact contact) {
         mContacts.add(contact);
     }
 
@@ -90,7 +90,7 @@ public class ContactAdapter extends BaseAdapter implements View.OnClickListener 
 
                 if (view.getId() == R.id.button_message) {
                     Intent intent = new Intent(mContext.getApplicationContext(), MessageActivity.class);
-                    intent.putExtra(Contact.NAME, clicked.getFullName());
+                    intent.putExtra(Contact.ID, clicked.getId());
                     mContext.startActivity(intent);
                 }
                 break;
@@ -98,8 +98,8 @@ public class ContactAdapter extends BaseAdapter implements View.OnClickListener 
     }
 
     private class ContactHolder {
-        TextView firstLetter;
-        TextView fullName;
-        ImageView buttonSend;
+        TextView firstLetter = null;
+        TextView fullName = null;
+        ImageView buttonSend = null;
     }
 }

@@ -1,6 +1,8 @@
 package mario.peric.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -8,45 +10,64 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import mario.peric.R;
+import mario.peric.helpers.ContactDBHelper;
+import mario.peric.models.Contact;
+import mario.peric.providers.ContactProvider;
+import mario.peric.utils.Preferences;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
 
     private static final int MIN_USERNAME_LENGTH = 1;
     private static final int MIN_PASSWORD_LENGTH = 5;
 
-    Button buttonRegister, buttonLogin;
-    EditText username, password;
+    Button mButtonRegister, mButtonLogin;
+    EditText mUsername, mPassword;
+    ContactDBHelper mHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        buttonRegister = findViewById(R.id.button_register);
-        buttonLogin = findViewById(R.id.button_login);
-        username = findViewById(R.id.username);
-        password = findViewById(R.id.password);
+        mHelper = new ContactDBHelper(this);
 
-        buttonLogin.setEnabled(false);
+        mButtonRegister = findViewById(R.id.button_register);
+        mButtonLogin = findViewById(R.id.button_login);
+        mUsername = findViewById(R.id.username);
+        mPassword = findViewById(R.id.password);
 
-        buttonRegister.setOnClickListener(this);
-        buttonLogin.setOnClickListener(this);
-        username.addTextChangedListener(this);
-        password.addTextChangedListener(this);
+        mButtonLogin.setEnabled(false);
+
+        mButtonRegister.setOnClickListener(this);
+        mButtonLogin.setOnClickListener(this);
+        mUsername.addTextChangedListener(this);
+        mPassword.addTextChangedListener(this);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_register:
-                Intent loginIntent = new Intent(this, RegisterActivity.class);
-                startActivity(loginIntent);
+                Intent registerIntent = new Intent(this, RegisterActivity.class);
+                startActivity(registerIntent);
                 break;
             case R.id.button_login:
-                Intent registerIntent = new Intent(this, ContactsActivity.class);
-                startActivity(registerIntent);
+                Contact contact = mHelper.getContact(mUsername.getText().toString());
+                if (contact != null) {
+                    Intent loginIntent = new Intent(this, ContactsActivity.class);
+                    SharedPreferences sharedPref = getSharedPreferences(Preferences.NAME,
+                            Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putInt(Preferences.USER_LOGGED_IN, contact.getId());
+                    editor.apply();
+                    startActivity(loginIntent);
+                } else {
+                    Toast.makeText(getApplicationContext(), R.string.username_does_not_exists,
+                            Toast.LENGTH_LONG).show();
+                }
                 break;
         }
     }
@@ -58,11 +79,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        if (username.getText().length() >= MIN_USERNAME_LENGTH &&
-                password.getText().length() >= MIN_PASSWORD_LENGTH) {
-            buttonLogin.setEnabled(true);
+        if (mUsername.getText().length() >= MIN_USERNAME_LENGTH &&
+                mPassword.getText().length() >= MIN_PASSWORD_LENGTH) {
+            mButtonLogin.setEnabled(true);
         } else {
-            buttonLogin.setEnabled(false);
+            mButtonLogin.setEnabled(false);
         }
     }
 

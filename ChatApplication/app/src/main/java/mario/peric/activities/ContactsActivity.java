@@ -1,18 +1,21 @@
 package mario.peric.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import mario.peric.R;
 import mario.peric.adapters.ContactAdapter;
+import mario.peric.helpers.ContactDBHelper;
 import mario.peric.models.Contact;
+import mario.peric.providers.ContactProvider;
+import mario.peric.utils.Preferences;
 
 public class ContactsActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -27,25 +30,22 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
 
         mButtonLogout.setOnClickListener(this);
 
+        ContactDBHelper helper = new ContactDBHelper(this);
         ContactAdapter contactAdapter = new ContactAdapter(this);
 
-        Date date = Calendar.getInstance().getTime();
+        Contact[] contacts = helper.getContacts();
 
-        contactAdapter.addUser(new Contact(getString(R.string.sample_username), getString(R.string.sample_password),
-                getString(R.string.sample_email), getString(R.string.sample_fname1), getString(R.string.sample_lname1),
-                getString(R.string.male), false, date));
-        contactAdapter.addUser(new Contact(getString(R.string.sample_username), getString(R.string.sample_password),
-                getString(R.string.sample_email), getString(R.string.sample_fname2), getString(R.string.sample_lname2),
-                getString(R.string.male), false, date));
-        contactAdapter.addUser(new Contact(getString(R.string.sample_username), getString(R.string.sample_password),
-                getString(R.string.sample_email), getString(R.string.sample_fname3), getString(R.string.sample_lname3),
-                getString(R.string.male), false, date));
-        contactAdapter.addUser(new Contact(getString(R.string.sample_username), getString(R.string.sample_password),
-                getString(R.string.sample_email), getString(R.string.sample_fname4), getString(R.string.sample_lname4),
-                getString(R.string.male), false, date));
+        SharedPreferences sharedPref = getSharedPreferences(Preferences.NAME, Context.MODE_PRIVATE);
+        int loggedUserId = sharedPref.getInt(Preferences.USER_LOGGED_IN, -1);
 
-        ListView contacts = findViewById(R.id.contacts);
-        contacts.setAdapter(contactAdapter);
+        for (Contact contact : contacts) {
+            if (contact.getId() != loggedUserId) {
+                contactAdapter.addContact(contact);
+            }
+        }
+
+        ListView contactList = findViewById(R.id.contacts);
+        contactList.setAdapter(contactAdapter);
     }
 
     @Override

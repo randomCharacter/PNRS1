@@ -12,11 +12,15 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.Date;
 
 import mario.peric.R;
+import mario.peric.helpers.ContactDBHelper;
+import mario.peric.models.Contact;
+import mario.peric.providers.ContactProvider;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, View.OnFocusChangeListener, TextWatcher {
 
@@ -71,8 +75,17 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_register:
-                Intent contactsIntent = new Intent(this, ContactsActivity.class);
-                startActivity(contactsIntent);
+                ContactDBHelper helper = new ContactDBHelper(this);
+                if (helper.getContact(username.getText().toString()) == null) {
+                    Contact contact = new Contact(0, username.getText().toString(),
+                            firstName.getText().toString(), lastName.getText().toString());
+                    helper.insertContact(contact);
+                    Intent loginIntent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(loginIntent);
+                } else {
+                    Toast.makeText(getApplicationContext(), R.string.username_exists,
+                            Toast.LENGTH_LONG).show();
+                }
                 break;
         }
     }

@@ -34,4 +34,6 @@
     <string name="sample_lname4">Damjanovic</string>
     <string name="my_chat_list">My chat list</string>
     <string name="open_conversation">Open conversation</string>
+    <string name="username_exists">Username already exist</string>
+    <string name="username_does_not_exists">Username does not exist</string>
 </resources>
