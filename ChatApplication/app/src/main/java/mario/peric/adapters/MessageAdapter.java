@@ -13,21 +13,20 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import mario.peric.R;
-import mario.peric.helpers.MessageDBHelper;
-import mario.peric.models.Contact;
 import mario.peric.models.Message;
+import mario.peric.providers.MessageProvider;
 import mario.peric.utils.Preferences;
 
 public class MessageAdapter extends BaseAdapter implements View.OnLongClickListener {
 
     private Context mContext;
     private ArrayList<Message> mMessages;
-    private MessageDBHelper mHelper;
+    private MessageProvider mMessageProvider;
 
     public MessageAdapter(Context context) {
         mContext = context;
         mMessages = new ArrayList<>();
-        mHelper = new MessageDBHelper(context);
+        mMessageProvider = new MessageProvider(context);
     }
 
     public void addMessage(Message message) {
@@ -97,7 +96,7 @@ public class MessageAdapter extends BaseAdapter implements View.OnLongClickListe
             case R.id.message:
                 int i = Integer.parseInt(view.getTag().toString());
                 Message message = mMessages.get(i);
-                mHelper.deleteMessage(message.getId());
+                mMessageProvider.deleteMessage(message.getId());
                 mMessages.remove(i);
                 notifyDataSetChanged();
                 return true;

@@ -5,14 +5,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 
 import mario.peric.R;
 import mario.peric.adapters.ContactAdapter;
-import mario.peric.helpers.ContactDBHelper;
+import mario.peric.helpers.DBHelper;
 import mario.peric.models.Contact;
 import mario.peric.providers.ContactProvider;
 import mario.peric.utils.Preferences;
@@ -20,6 +19,7 @@ import mario.peric.utils.Preferences;
 public class ContactsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button mButtonLogout;
+    private ContactProvider mContactProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +30,10 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
 
         mButtonLogout.setOnClickListener(this);
 
-        ContactDBHelper helper = new ContactDBHelper(this);
+        mContactProvider = new ContactProvider(this);
         ContactAdapter contactAdapter = new ContactAdapter(this);
 
-        Contact[] contacts = helper.getContacts();
+        Contact[] contacts = mContactProvider.getContacts();
 
         SharedPreferences sharedPref = getSharedPreferences(Preferences.NAME, Context.MODE_PRIVATE);
         int loggedUserId = sharedPref.getInt(Preferences.USER_LOGGED_IN, -1);

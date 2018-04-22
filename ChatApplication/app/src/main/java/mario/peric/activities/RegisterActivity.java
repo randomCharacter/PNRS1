@@ -18,7 +18,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import mario.peric.R;
-import mario.peric.helpers.ContactDBHelper;
 import mario.peric.models.Contact;
 import mario.peric.providers.ContactProvider;
 
@@ -33,6 +32,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     CheckBox notifications;
     DatePicker calendar;
     Button buttonRegister;
+    ContactProvider mContactProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +48,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         notifications = findViewById(R.id.notifications);
         gender = findViewById(R.id.gender);
         buttonRegister = findViewById(R.id.button_register);
+
+        mContactProvider = new ContactProvider(this);
 
         // Add genders to spinner
         String[] genders = { getString(R.string.male), getString(R.string.female) };
@@ -75,11 +77,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_register:
-                ContactDBHelper helper = new ContactDBHelper(this);
-                if (helper.getContact(username.getText().toString()) == null) {
+                if (mContactProvider.getContact(username.getText().toString()) == null) {
                     Contact contact = new Contact(0, username.getText().toString(),
                             firstName.getText().toString(), lastName.getText().toString());
-                    helper.insertContact(contact);
+                    mContactProvider.insertContact(contact);
                     Intent loginIntent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(loginIntent);
                 } else {
