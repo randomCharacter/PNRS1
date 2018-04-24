@@ -82,6 +82,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                             firstName.getText().toString(), lastName.getText().toString());
                     mContactProvider.insertContact(contact);
                     Intent loginIntent = new Intent(getApplicationContext(), MainActivity.class);
+                    loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(loginIntent);
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.username_exists,
