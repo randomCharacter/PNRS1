@@ -1,4 +1,4 @@
-package mario.peric.providers;
+package mario.peric.wrappers.db;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,11 +8,11 @@ import android.database.sqlite.SQLiteDatabase;
 import mario.peric.helpers.DBHelper;
 import mario.peric.models.Contact;
 
-public class ContactProvider {
+public class ContactWrapper {
 
     private DBHelper mHelper = null;
     
-    public ContactProvider(Context context) {
+    public ContactWrapper(Context context) {
         super();
         mHelper = new DBHelper(context);
     }

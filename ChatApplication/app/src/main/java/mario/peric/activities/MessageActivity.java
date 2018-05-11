@@ -16,11 +16,10 @@ import android.widget.Toast;
 
 import mario.peric.R;
 import mario.peric.adapters.MessageAdapter;
-import mario.peric.helpers.DBHelper;
 import mario.peric.models.Contact;
 import mario.peric.models.Message;
-import mario.peric.providers.ContactProvider;
-import mario.peric.providers.MessageProvider;
+import mario.peric.wrappers.db.ContactWrapper;
+import mario.peric.wrappers.db.MessageWrapper;
 import mario.peric.utils.Preferences;
 
 public class MessageActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
@@ -29,17 +28,17 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
     private EditText mMessage;
     private MessageAdapter mMessageAdapter;
     private TextView mContactName;
-    private ContactProvider mContactProvider;
+    private ContactWrapper mContactWrapper;
     private Contact mReceiver, mSender;
-    private MessageProvider mMessageProvider;
+    private MessageWrapper mMessageWrapper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
 
-        mContactProvider = new ContactProvider(this);
-        mMessageProvider = new MessageProvider(this);
+        mContactWrapper = new ContactWrapper(this);
+        mMessageWrapper = new MessageWrapper(this);
 
         mButtonLogout = findViewById(R.id.button_log_out);
         mButtonSend = findViewById(R.id.button_send);
@@ -47,11 +46,11 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
         mContactName = findViewById(R.id.contact_name);
 
         int receiverId = getIntent().getIntExtra(Contact.ID, -1);
-        mReceiver = mContactProvider.getContact(receiverId);
+        mReceiver = mContactWrapper.getContact(receiverId);
 
         SharedPreferences sharedPref = getSharedPreferences(Preferences.NAME, Context.MODE_PRIVATE);
         int senderId = sharedPref.getInt(Preferences.USER_LOGGED_IN, -1);
-        mSender = mContactProvider.getContact(senderId);
+        mSender = mContactWrapper.getContact(senderId);
 
         mContactName.setText(mReceiver.getFullName());
 
@@ -88,7 +87,7 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
                 Toast.makeText(getApplicationContext(), R.string.message_sent, Toast.LENGTH_LONG).show();
                 Message message = new Message(0, mSender, mReceiver, mMessage.getText().toString());
 
-                mMessageProvider.insertMessage(message);
+                mMessageWrapper.insertMessage(message);
 
                 mMessageAdapter.addMessage(message);
                 mMessageAdapter.notifyDataSetChanged();
@@ -118,7 +117,7 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void fetchMessages() {
-        Message[] messages = mMessageProvider.getMessages(mSender.getId(), mReceiver.getId());
+        Message[] messages = mMessageWrapper.getMessages(mSender.getId(), mReceiver.getId());
         if (messages != null) {
             for (Message message : messages) {
                 mMessageAdapter.addMessage(message);

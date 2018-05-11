@@ -13,9 +13,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import mario.peric.R;
-import mario.peric.helpers.DBHelper;
 import mario.peric.models.Contact;
-import mario.peric.providers.ContactProvider;
+import mario.peric.wrappers.db.ContactWrapper;
 import mario.peric.utils.Preferences;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
@@ -25,14 +24,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     Button mButtonRegister, mButtonLogin;
     EditText mUsername, mPassword;
-    ContactProvider mContactProvider;
+    ContactWrapper mContactWrapper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mContactProvider = new ContactProvider(this);
+        mContactWrapper = new ContactWrapper(this);
 
         mButtonRegister = findViewById(R.id.button_register);
         mButtonLogin = findViewById(R.id.button_login);
@@ -55,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(registerIntent);
                 break;
             case R.id.button_login:
-                Contact contact = mContactProvider.getContact(mUsername.getText().toString());
+                Contact contact = mContactWrapper.getContact(mUsername.getText().toString());
                 if (contact != null) {
                     Intent loginIntent = new Intent(this, ContactsActivity.class);
                     SharedPreferences sharedPref = getSharedPreferences(Preferences.NAME,

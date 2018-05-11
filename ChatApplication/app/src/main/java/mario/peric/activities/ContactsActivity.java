@@ -11,15 +11,14 @@ import android.widget.ListView;
 
 import mario.peric.R;
 import mario.peric.adapters.ContactAdapter;
-import mario.peric.helpers.DBHelper;
 import mario.peric.models.Contact;
-import mario.peric.providers.ContactProvider;
+import mario.peric.wrappers.db.ContactWrapper;
 import mario.peric.utils.Preferences;
 
 public class ContactsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button mButtonLogout;
-    private ContactProvider mContactProvider;
+    private ContactWrapper mContactWrapper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +29,10 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
 
         mButtonLogout.setOnClickListener(this);
 
-        mContactProvider = new ContactProvider(this);
+        mContactWrapper = new ContactWrapper(this);
         ContactAdapter contactAdapter = new ContactAdapter(this);
 
-        Contact[] contacts = mContactProvider.getContacts();
+        Contact[] contacts = mContactWrapper.getContacts();
 
         SharedPreferences sharedPref = getSharedPreferences(Preferences.NAME, Context.MODE_PRIVATE);
         int loggedUserId = sharedPref.getInt(Preferences.USER_LOGGED_IN, -1);

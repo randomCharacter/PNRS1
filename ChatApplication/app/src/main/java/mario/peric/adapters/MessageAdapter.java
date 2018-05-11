@@ -14,19 +14,19 @@ import java.util.ArrayList;
 
 import mario.peric.R;
 import mario.peric.models.Message;
-import mario.peric.providers.MessageProvider;
+import mario.peric.wrappers.db.MessageWrapper;
 import mario.peric.utils.Preferences;
 
 public class MessageAdapter extends BaseAdapter implements View.OnLongClickListener {
 
     private Context mContext;
     private ArrayList<Message> mMessages;
-    private MessageProvider mMessageProvider;
+    private MessageWrapper mMessageWrapper;
 
     public MessageAdapter(Context context) {
         mContext = context;
         mMessages = new ArrayList<>();
-        mMessageProvider = new MessageProvider(context);
+        mMessageWrapper = new MessageWrapper(context);
     }
 
     public void addMessage(Message message) {
@@ -96,7 +96,7 @@ public class MessageAdapter extends BaseAdapter implements View.OnLongClickListe
             case R.id.message:
                 int i = Integer.parseInt(view.getTag().toString());
                 Message message = mMessages.get(i);
-                mMessageProvider.deleteMessage(message.getId());
+                mMessageWrapper.deleteMessage(message.getId());
                 mMessages.remove(i);
                 notifyDataSetChanged();
                 return true;

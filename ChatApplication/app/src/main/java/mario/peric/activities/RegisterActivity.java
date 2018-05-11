@@ -19,7 +19,7 @@ import java.util.Date;
 
 import mario.peric.R;
 import mario.peric.models.Contact;
-import mario.peric.providers.ContactProvider;
+import mario.peric.wrappers.db.ContactWrapper;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, View.OnFocusChangeListener, TextWatcher {
 
@@ -32,7 +32,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     CheckBox notifications;
     DatePicker calendar;
     Button buttonRegister;
-    ContactProvider mContactProvider;
+    ContactWrapper mContactWrapper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +49,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         gender = findViewById(R.id.gender);
         buttonRegister = findViewById(R.id.button_register);
 
-        mContactProvider = new ContactProvider(this);
+        mContactWrapper = new ContactWrapper(this);
 
         // Add genders to spinner
         String[] genders = { getString(R.string.male), getString(R.string.female) };
@@ -77,10 +77,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_register:
-                if (mContactProvider.getContact(username.getText().toString()) == null) {
+                if (mContactWrapper.getContact(username.getText().toString()) == null) {
                     Contact contact = new Contact(0, username.getText().toString(),
                             firstName.getText().toString(), lastName.getText().toString());
-                    mContactProvider.insertContact(contact);
+                    mContactWrapper.insertContact(contact);
                     Intent loginIntent = new Intent(getApplicationContext(), MainActivity.class);
                     loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(loginIntent);

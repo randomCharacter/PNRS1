@@ -1,4 +1,4 @@
-package mario.peric.providers;
+package mario.peric.wrappers.db;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,17 +8,18 @@ import android.database.sqlite.SQLiteDatabase;
 import mario.peric.helpers.DBHelper;
 import mario.peric.models.Contact;
 import mario.peric.models.Message;
+import mario.peric.wrappers.db.ContactWrapper;
 
 
-public class MessageProvider {
+public class MessageWrapper {
 
     private DBHelper mHelper;
-    private ContactProvider mContactProvider;
+    private ContactWrapper mContactWrapper;
 
-    public MessageProvider(Context context) {
+    public MessageWrapper(Context context) {
         super();
         mHelper = new DBHelper(context);
-        mContactProvider = new ContactProvider(context);
+        mContactWrapper = new ContactWrapper(context);
     }
 
     public void insertMessage(Message message) {
@@ -111,8 +112,8 @@ public class MessageProvider {
         int receiverId = cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_RECEIVER));
         String message = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_MESSAGE));
 
-        Contact sender = mContactProvider.getContact(senderId);
-        Contact receiver = mContactProvider.getContact(receiverId);
+        Contact sender = mContactWrapper.getContact(senderId);
+        Contact receiver = mContactWrapper.getContact(receiverId);
 
         return new Message(messageId, sender, receiver, message);
     }
