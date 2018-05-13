@@ -71,7 +71,7 @@ public class MessageAdapter extends BaseAdapter implements View.OnLongClickListe
 
         SharedPreferences sharedPref = mContext.getSharedPreferences(Preferences.NAME, Context.MODE_PRIVATE);
 
-        if (message.getReceived()) {
+        if (!message.getReceived()) {
             holder.message.setBackground(view.getResources().getDrawable(R.drawable.message_sent));
             holder.messageContainer.setGravity(Gravity.END);
         } else {
