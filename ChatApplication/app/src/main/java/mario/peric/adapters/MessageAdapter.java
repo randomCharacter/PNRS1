@@ -14,19 +14,16 @@ import java.util.ArrayList;
 
 import mario.peric.R;
 import mario.peric.models.Message;
-import mario.peric.wrappers.db.MessageWrapper;
 import mario.peric.utils.Preferences;
 
 public class MessageAdapter extends BaseAdapter implements View.OnLongClickListener {
 
     private Context mContext;
     private ArrayList<Message> mMessages;
-    private MessageWrapper mMessageWrapper;
 
     public MessageAdapter(Context context) {
         mContext = context;
         mMessages = new ArrayList<>();
-        mMessageWrapper = new MessageWrapper(context);
     }
 
     public void addMessage(Message message) {
@@ -73,9 +70,8 @@ public class MessageAdapter extends BaseAdapter implements View.OnLongClickListe
         Message message = (Message) getItem(i);
 
         SharedPreferences sharedPref = mContext.getSharedPreferences(Preferences.NAME, Context.MODE_PRIVATE);
-        int loggedInUserId = sharedPref.getInt(Preferences.USER_LOGGED_IN, -1);
 
-        if (message.getSender().getId() == loggedInUserId) {
+        if (message.getReceived()) {
             holder.message.setBackground(view.getResources().getDrawable(R.drawable.message_sent));
             holder.messageContainer.setGravity(Gravity.END);
         } else {
@@ -96,7 +92,6 @@ public class MessageAdapter extends BaseAdapter implements View.OnLongClickListe
             case R.id.message:
                 int i = Integer.parseInt(view.getTag().toString());
                 Message message = mMessages.get(i);
-                mMessageWrapper.deleteMessage(message.getId());
                 mMessages.remove(i);
                 notifyDataSetChanged();
                 return true;

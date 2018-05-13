@@ -36,4 +36,7 @@
     <string name="open_conversation">Open conversation</string>
     <string name="username_exists">Username already exist</string>
     <string name="username_does_not_exists">Username does not exist</string>
+    <string name="error">Error</string>
+    <string name="user_registered">User registered</string>
+    <string name="user_logged_in">Logged in</string>
 </resources>

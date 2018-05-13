@@ -75,8 +75,8 @@ public class ContactAdapter extends BaseAdapter implements View.OnClickListener 
 
         Contact contact = (Contact) getItem(i);
         ContactHolder holder = (ContactHolder) view.getTag();
-        holder.firstLetter.setText(contact.getFirstName().substring(0, 1).toUpperCase());
-        holder.fullName.setText(contact.getFullName());
+        holder.firstLetter.setText(contact.getUsername().substring(0, 1).toUpperCase());
+        holder.fullName.setText(contact.getUsername());
 
         return view;
     }
@@ -90,7 +90,7 @@ public class ContactAdapter extends BaseAdapter implements View.OnClickListener 
 
                 if (view.getId() == R.id.button_message) {
                     Intent intent = new Intent(mContext.getApplicationContext(), MessageActivity.class);
-                    intent.putExtra(Contact.ID, clicked.getId());
+                    intent.putExtra(Contact.ID, clicked.getUsername());
                     mContext.startActivity(intent);
                 }
                 break;

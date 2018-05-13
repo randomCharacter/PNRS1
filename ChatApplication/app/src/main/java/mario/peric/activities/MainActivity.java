@@ -3,6 +3,7 @@ package mario.peric.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -12,9 +13,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
 import mario.peric.R;
-import mario.peric.models.Contact;
-import mario.peric.wrappers.db.ContactWrapper;
+import mario.peric.helpers.HTTPHelper;
 import mario.peric.utils.Preferences;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
@@ -24,14 +29,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     Button mButtonRegister, mButtonLogin;
     EditText mUsername, mPassword;
-    ContactWrapper mContactWrapper;
+    Handler mHandler;
+    HTTPHelper mHTTPHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mContactWrapper = new ContactWrapper(this);
+        mHandler = new Handler();
+        mHTTPHelper = new HTTPHelper();
 
         mButtonRegister = findViewById(R.id.button_register);
         mButtonLogin = findViewById(R.id.button_login);
@@ -54,19 +61,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(registerIntent);
                 break;
             case R.id.button_login:
-                Contact contact = mContactWrapper.getContact(mUsername.getText().toString());
-                if (contact != null) {
-                    Intent loginIntent = new Intent(this, ContactsActivity.class);
-                    SharedPreferences sharedPref = getSharedPreferences(Preferences.NAME,
-                            Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPref.edit();
-                    editor.putInt(Preferences.USER_LOGGED_IN, contact.getId());
-                    editor.apply();
-                    startActivity(loginIntent);
-                } else {
-                    Toast.makeText(getApplicationContext(), R.string.username_does_not_exists,
-                            Toast.LENGTH_LONG).show();
-                }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONObject jsonObject = new JSONObject();
+                        try {
+                            jsonObject.put(HTTPHelper.USERNAME, mUsername.getText().toString());
+                            jsonObject.put(HTTPHelper.PASSWORD, mPassword.getText().toString());
+
+                            final HTTPHelper.HTTPResponse res = mHTTPHelper.postJSONObjectFromURL(HTTPHelper.URL_LOGIN, jsonObject);
+
+                            mHandler.post(new Runnable(){
+                                public void run() {
+                                    if (res.code == HTTPHelper.SUCCESS) {
+                                        Toast.makeText(MainActivity.this, R.string.user_logged_in, Toast.LENGTH_LONG).show();
+                                        Intent contactsIntent = new Intent(getApplicationContext(), ContactsActivity.class);
+
+                                        SharedPreferences.Editor editor = getSharedPreferences(Preferences.NAME, Context.MODE_PRIVATE).edit();
+                                        editor.putString(Preferences.SESSION_ID, res.sessionId);
+                                        editor.putString(Preferences.USER_LOGGED_IN, mUsername.getText().toString());
+                                        editor.apply();
+
+                                        startActivity(contactsIntent);
+                                    } else {
+                                        Toast.makeText(MainActivity.this, getString(R.string.error) + " " +
+                                                res.code + ": " +res.message, Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            });
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
                 break;
         }
     }

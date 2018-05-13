@@ -5,42 +5,20 @@ import java.util.Date;
 
 public class Message {
 
-    private int mId;
-
-    public int getId() {
-        return mId;
-    }
-
-    private Contact mSender;
-    private Contact mReceiver;
+    private boolean mReceived;
     private String mMessage;
-    private Date mTime;
 
-    public Message(int id, Contact sender, Contact receiver, String message) {
-        mId = id;
-        mSender = sender;
-        mReceiver = receiver;
+    public Message(String message, boolean received) {
         mMessage = message;
-        mTime = Calendar.getInstance().getTime();
+        mReceived = received;
     }
 
-    public Contact getSender() {
-        return mSender;
-    }
-
-    public Contact getReceiver() {
-        return mReceiver;
-    }
-
-    public void setSender(Contact sender) {
-        mSender = sender;
+    public boolean getReceived() {
+        return mReceived;
     }
 
     public String getMessage() {
         return mMessage;
     }
 
-    public Date getTime() {
-        return mTime;
-    }
 }

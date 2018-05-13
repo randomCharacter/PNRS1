@@ -3,6 +3,7 @@ package mario.peric.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -14,45 +15,46 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
 import mario.peric.R;
 import mario.peric.adapters.MessageAdapter;
+import mario.peric.helpers.HTTPHelper;
 import mario.peric.models.Contact;
 import mario.peric.models.Message;
-import mario.peric.wrappers.db.ContactWrapper;
-import mario.peric.wrappers.db.MessageWrapper;
 import mario.peric.utils.Preferences;
 
 public class MessageActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
 
-    private Button mButtonLogout, mButtonSend;
-    private EditText mMessage;
-    private MessageAdapter mMessageAdapter;
-    private TextView mContactName;
-    private ContactWrapper mContactWrapper;
-    private Contact mReceiver, mSender;
-    private MessageWrapper mMessageWrapper;
+    Button mButtonLogout, mButtonSend;
+    EditText mMessage;
+    MessageAdapter mMessageAdapter;
+    TextView mContactName;
+    String mSender;
+    HTTPHelper mHTTPHelper;
+    String mSessionID;
+    Handler mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
 
-        mContactWrapper = new ContactWrapper(this);
-        mMessageWrapper = new MessageWrapper(this);
+        mHTTPHelper = new HTTPHelper();
+        mHandler = new Handler();
 
         mButtonLogout = findViewById(R.id.button_log_out);
         mButtonSend = findViewById(R.id.button_send);
         mMessage = findViewById(R.id.message_text);
         mContactName = findViewById(R.id.contact_name);
 
-        int receiverId = getIntent().getIntExtra(Contact.ID, -1);
-        mReceiver = mContactWrapper.getContact(receiverId);
+        mSender = getIntent().getStringExtra(Contact.ID);
 
-        SharedPreferences sharedPref = getSharedPreferences(Preferences.NAME, Context.MODE_PRIVATE);
-        int senderId = sharedPref.getInt(Preferences.USER_LOGGED_IN, -1);
-        mSender = mContactWrapper.getContact(senderId);
-
-        mContactName.setText(mReceiver.getFullName());
+        mContactName.setText(mSender);
 
         mButtonSend.setEnabled(false);
 
@@ -79,20 +81,64 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_log_out:
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            mHTTPHelper.postJSONObjectFromURL(HTTPHelper.URL_LOGOUT, new JSONObject(), mSessionID);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+
                 Intent logoutIntent = new Intent(getApplicationContext(), MainActivity.class);
                 logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(logoutIntent);
                 break;
             case R.id.button_send:
-                Toast.makeText(getApplicationContext(), R.string.message_sent, Toast.LENGTH_LONG).show();
-                Message message = new Message(0, mSender, mReceiver, mMessage.getText().toString());
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("receiver", mSender);
+                            jsonObject.put("data", mMessage.getText().toString());
+                            HTTPHelper.HTTPResponse response = mHTTPHelper.postJSONObjectFromURL(HTTPHelper.URL_MESSAGE_SEND, jsonObject, mSessionID);
 
-                mMessageWrapper.insertMessage(message);
+                            if (response.code != HTTPHelper.SUCCESS) {
+                                mHandler.post(new Runnable(){
+                                    public void run() {
+                                        Toast.makeText(MessageActivity.this, "Unable to send message", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                            } else {
+                                mHandler.post(new Runnable(){
+                                    public void run() {
+                                        mMessageAdapter.addMessage(new Message(mMessage.getText().toString(), false));
+                                        mMessageAdapter.notifyDataSetChanged();
+                                        mMessage.setText("");
+                                        mButtonSend.setEnabled(false);
+                                        Toast.makeText(getApplicationContext(), R.string.message_sent, Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                            }
 
-                mMessageAdapter.addMessage(message);
-                mMessageAdapter.notifyDataSetChanged();
-                mMessage.setText("");
-                mButtonSend.setEnabled(false);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } finally {
+                            mHandler.post(new Runnable(){
+                                public void run() {
+                                    mMessageAdapter.notifyDataSetChanged();
+                                }
+                            });
+                        }
+                    }
+                }).start();
                 break;
         }
     }
@@ -117,11 +163,41 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void fetchMessages() {
-        Message[] messages = mMessageWrapper.getMessages(mSender.getId(), mReceiver.getId());
-        if (messages != null) {
-            for (Message message : messages) {
-                mMessageAdapter.addMessage(message);
+
+        SharedPreferences sharedPref = getSharedPreferences(Preferences.NAME, Context.MODE_PRIVATE);
+        mSessionID = sharedPref.getString(Preferences.SESSION_ID, null);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONArray jsonArray = mHTTPHelper.getJSONArrayFromURL(HTTPHelper.URL_MESSAGES +
+                            mSender, mSessionID);
+                    if (jsonArray == null) {
+                        Toast.makeText(MessageActivity.this, "UNKNOWN ERROR", Toast.LENGTH_LONG).show();
+                        Intent loginIntent = new Intent(getApplicationContext(), MainActivity.class);
+                        loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(loginIntent);
+                    } else {
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            String sender = jsonObject.getString(HTTPHelper.SENDER);
+                            String data = jsonObject.getString(HTTPHelper.DATA);
+                            Message message = new Message(data, sender.compareTo(mSender) == 0);
+                            mMessageAdapter.addMessage(message);
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } finally {
+                    mHandler.post(new Runnable(){
+                        public void run() {
+                            mMessageAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }
             }
-        }
+        }).start();
     }
 }
