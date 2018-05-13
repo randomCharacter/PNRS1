@@ -30,6 +30,13 @@
                 tools:layout_editor_absoluteY="48dp" />
 
             <Button
+                android:id="@+id/button_refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/refresh"
+                app:layout_constraintRight_toLeftOf="@id/button_log_out" />
+
+            <Button
                 android:id="@+id/button_log_out"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

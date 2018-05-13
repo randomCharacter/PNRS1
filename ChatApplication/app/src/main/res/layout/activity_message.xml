@@ -18,6 +18,16 @@
         app:layout_constraintBottom_toBottomOf="@id/button_log_out"/>
 
     <Button
+        android:id="@+id/button_refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:layout_constraintEnd_toStartOf="@id/button_log_out"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="@string/refresh" />
+
+
+    <Button
         android:id="@+id/button_log_out"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,7 +41,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:hint="@string/sample_message"
+        android:hint="@string/enter_message"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/button_send"/>

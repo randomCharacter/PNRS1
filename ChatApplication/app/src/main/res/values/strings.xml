@@ -39,4 +39,6 @@
     <string name="error">Error</string>
     <string name="user_registered">User registered</string>
     <string name="user_logged_in">Logged in</string>
+    <string name="refresh">REFRESH</string>
+    <string name="enter_message">Enter message</string>
 </resources>
