@@ -65,7 +65,6 @@ public class ContactAdapter extends BaseAdapter implements View.OnClickListener 
             holder.firstLetter = view.findViewById(R.id.first_letter);
             holder.fullName = view.findViewById(R.id.full_name);
             holder.buttonSend.setOnClickListener(this);
-            holder.buttonSend.setTag(i);
             view.setTag(holder);
 
             Random random = new Random();
@@ -77,6 +76,7 @@ public class ContactAdapter extends BaseAdapter implements View.OnClickListener 
         ContactHolder holder = (ContactHolder) view.getTag();
         holder.firstLetter.setText(contact.getUsername().substring(0, 1).toUpperCase());
         holder.fullName.setText(contact.getUsername());
+        holder.buttonSend.setTag(i);
 
         return view;
     }
