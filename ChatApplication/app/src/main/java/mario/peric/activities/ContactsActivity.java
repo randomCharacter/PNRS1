@@ -25,11 +25,12 @@ import mario.peric.utils.Preferences;
 
 public class ContactsActivity extends AppCompatActivity implements View.OnClickListener {
 
-    Button mButtonLogout;
+    Button mButtonLogout, mButtonRefresh;
     HTTPHelper mHTTPHelper;
     Handler mHandler;
     String mLoggedUser;
     String mSessionID;
+    ContactAdapter mContactAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +41,12 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         mHandler = new Handler();
 
         mButtonLogout = findViewById(R.id.button_log_out);
+        mButtonRefresh = findViewById(R.id.button_refresh);
 
         mButtonLogout.setOnClickListener(this);
+        mButtonRefresh.setOnClickListener(this);
 
-        final ContactAdapter contactAdapter = new ContactAdapter(this);
+        mContactAdapter = new ContactAdapter(this);
 
         SharedPreferences sharedPref = getSharedPreferences(Preferences.NAME, Context.MODE_PRIVATE);
         mSessionID = sharedPref.getString(Preferences.SESSION_ID, null);
@@ -57,42 +60,7 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         }
 
         ListView contactList = findViewById(R.id.contacts);
-        contactList.setAdapter(contactAdapter);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    JSONArray jsonArray = mHTTPHelper.getJSONArrayFromURL(HTTPHelper.URL_CONTACTS, mSessionID);
-                    if (jsonArray == null) {
-                        Toast.makeText(ContactsActivity.this, "UNKNOWN ERROR", Toast.LENGTH_LONG).show();
-                        Intent loginIntent = new Intent(getApplicationContext(), MainActivity.class);
-                        loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(loginIntent);
-                    } else {
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject jsonObject = jsonArray.getJSONObject(i);
-                            String username = jsonObject.getString(HTTPHelper.USERNAME);
-                            Contact contact = new Contact(username);
-                            if (!username.equals(mLoggedUser)) {
-                                contactAdapter.addContact(contact);
-                            }
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } finally {
-                    mHandler.post(new Runnable(){
-                        public void run() {
-                            contactAdapter.notifyDataSetChanged();
-                        }
-                    });
-                }
-            }
-        }).start();
-
+        contactList.setAdapter(mContactAdapter);
     }
 
     @Override
@@ -116,7 +84,51 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                 logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(logoutIntent);
                 break;
+            case R.id.button_refresh:
+                fetchContacts();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fetchContacts();
+    }
+
+    private void fetchContacts() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONArray jsonArray = mHTTPHelper.getJSONArrayFromURL(HTTPHelper.URL_CONTACTS, mSessionID);
+                    if (jsonArray == null) {
+                        Toast.makeText(ContactsActivity.this, "UNKNOWN ERROR", Toast.LENGTH_LONG).show();
+                        Intent loginIntent = new Intent(getApplicationContext(), MainActivity.class);
+                        loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(loginIntent);
+                    } else {
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            String username = jsonObject.getString(HTTPHelper.USERNAME);
+                            Contact contact = new Contact(username);
+                            if (!username.equals(mLoggedUser)) {
+                                mContactAdapter.addContact(contact);
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } finally {
+                    mHandler.post(new Runnable(){
+                        public void run() {
+                            mContactAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }
+            }
+        }).start();
     }
 
 }

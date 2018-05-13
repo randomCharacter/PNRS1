@@ -30,7 +30,7 @@ import mario.peric.utils.Preferences;
 
 public class MessageActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
 
-    Button mButtonLogout, mButtonSend;
+    Button mButtonLogout, mButtonSend, mButtonRefresh;
     EditText mMessage;
     MessageAdapter mMessageAdapter;
     TextView mContactName;
@@ -49,6 +49,7 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
 
         mButtonLogout = findViewById(R.id.button_log_out);
         mButtonSend = findViewById(R.id.button_send);
+        mButtonRefresh = findViewById(R.id.button_refresh);
         mMessage = findViewById(R.id.message_text);
         mContactName = findViewById(R.id.contact_name);
 
@@ -62,6 +63,7 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
 
         mButtonSend.setOnClickListener(this);
         mButtonLogout.setOnClickListener(this);
+        mButtonRefresh.setOnClickListener(this);
 
         mMessageAdapter = new MessageAdapter(this);
 
@@ -140,6 +142,8 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
                     }
                 }).start();
                 break;
+            case R.id.button_refresh:
+                fetchMessages();
         }
     }
 
@@ -163,7 +167,6 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void fetchMessages() {
-
         SharedPreferences sharedPref = getSharedPreferences(Preferences.NAME, Context.MODE_PRIVATE);
         mSessionID = sharedPref.getString(Preferences.SESSION_ID, null);
         new Thread(new Runnable() {
