@@ -13,13 +13,16 @@ import java.net.URL;
 
 public class HTTPHelper {
 
-    public static final int SUCCESS = 200;
+    public static final int CODE_SUCCESS = 200;
+    public static final int CODE_INVALID_USER_PASS = 404;
+    public static final int CODE_USER_EXISTS = 409;
 
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
     public static final String EMAIL = "email";
     public static final String SESSION_ID = "sessionid";
     public static final String SENDER = "sender";
+    public static final String RECEIVER = "receiver";
     public static final String DATA = "data";
 
     public static final String URL_SERVER = "http://18.205.194.168:80";
@@ -57,7 +60,7 @@ public class HTTPHelper {
 
         int responseCode =  urlConnection.getResponseCode();
         urlConnection.disconnect();
-        return responseCode == SUCCESS ? new JSONArray(jsonString) : null;
+        return responseCode == CODE_SUCCESS ? new JSONArray(jsonString) : null;
     }
 
     public HTTPResponse postJSONObjectFromURL(String urlString, JSONObject jsonObject) throws IOException, JSONException {

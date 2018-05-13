@@ -41,4 +41,9 @@
     <string name="user_logged_in">Logged in</string>
     <string name="refresh">REFRESH</string>
     <string name="enter_message">Enter message</string>
+    <string name="unknown_error">UNKNOWN ERROR</string>
+    <string name="unable_to_send_message">Unable to send message</string>
+    <string name="logged_out">Logged out</string>
+    <string name="wrong_user_pass">Wrong username/password</string>
+    <string name="username_taken">Username already taken</string>
 </resources>

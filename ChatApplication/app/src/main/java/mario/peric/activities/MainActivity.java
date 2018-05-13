@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                             mHandler.post(new Runnable(){
                                 public void run() {
-                                    if (res.code == HTTPHelper.SUCCESS) {
+                                    if (res.code == HTTPHelper.CODE_SUCCESS) {
                                         Toast.makeText(MainActivity.this, R.string.user_logged_in, Toast.LENGTH_LONG).show();
                                         Intent contactsIntent = new Intent(getApplicationContext(), ContactsActivity.class);
 
@@ -83,6 +83,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         editor.apply();
 
                                         startActivity(contactsIntent);
+                                    } else if (res.code == HTTPHelper.CODE_INVALID_USER_PASS) {
+                                        Toast.makeText(MainActivity.this, R.string.wrong_user_pass,
+                                                Toast.LENGTH_LONG).show();
                                     } else {
                                         Toast.makeText(MainActivity.this, getString(R.string.error) + " " +
                                                 res.code + ": " +res.message, Toast.LENGTH_LONG).show();

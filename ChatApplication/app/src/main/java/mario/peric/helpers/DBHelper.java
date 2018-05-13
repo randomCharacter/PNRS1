@@ -1,13 +1,9 @@
 package mario.peric.helpers;
 
-import android.content.ContentValues;
+
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
-import mario.peric.models.Contact;
-import mario.peric.models.Message;
 
 public class DBHelper extends SQLiteOpenHelper {
 

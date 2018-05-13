@@ -1,8 +1,5 @@
 package mario.peric.models;
 
-import java.util.Calendar;
-import java.util.Date;
-
 public class Message {
 
     private boolean mReceived;

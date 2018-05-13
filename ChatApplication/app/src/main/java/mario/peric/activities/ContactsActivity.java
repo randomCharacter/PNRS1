@@ -53,7 +53,7 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         mLoggedUser = sharedPref.getString(Preferences.USER_LOGGED_IN, null);
 
         if (mSessionID == null) {
-            Toast.makeText(this, "UNKNOWN ERROR", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.unknown_error, Toast.LENGTH_LONG).show();
             Intent loginIntent = new Intent(getApplicationContext(), MainActivity.class);
             loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(loginIntent);
@@ -71,8 +71,25 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                     @Override
                     public void run() {
                         try {
-                            mHTTPHelper.postJSONObjectFromURL(HTTPHelper.URL_LOGOUT, new JSONObject(), mSessionID);
-                        } catch (IOException e) {
+                            final HTTPHelper.HTTPResponse res = mHTTPHelper.postJSONObjectFromURL(HTTPHelper.URL_LOGOUT, new JSONObject(), mSessionID);
+                            if (res.code == HTTPHelper.CODE_SUCCESS) {
+                                mHandler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(), R.string.logged_out,
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                            } else {
+                                mHandler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(), getString(R.string.error) + " " +
+                                                res.code + ": " +res.message, Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                            }
+                        }catch (IOException e) {
                             e.printStackTrace();
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -103,7 +120,7 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                 try {
                     JSONArray jsonArray = mHTTPHelper.getJSONArrayFromURL(HTTPHelper.URL_CONTACTS, mSessionID);
                     if (jsonArray == null) {
-                        Toast.makeText(ContactsActivity.this, "UNKNOWN ERROR", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ContactsActivity.this, R.string.unknown_error, Toast.LENGTH_LONG).show();
                         Intent loginIntent = new Intent(getApplicationContext(), MainActivity.class);
                         loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(loginIntent);

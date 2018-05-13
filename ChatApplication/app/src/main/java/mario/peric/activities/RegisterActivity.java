@@ -96,11 +96,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
                             mHandler.post(new Runnable(){
                                 public void run() {
-                                    if (res.code == HTTPHelper.SUCCESS) {
+                                    if (res.code == HTTPHelper.CODE_SUCCESS) {
                                         Toast.makeText(RegisterActivity.this, R.string.user_registered, Toast.LENGTH_LONG).show();
                                         Intent loginIntent = new Intent(getApplicationContext(), MainActivity.class);
                                         loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         startActivity(loginIntent);
+                                    } else if (res.code == HTTPHelper.CODE_USER_EXISTS) {
+                                        Toast.makeText(RegisterActivity.this, R.string.username_taken,
+                                                Toast.LENGTH_LONG).show();
                                     } else {
                                         Toast.makeText(RegisterActivity.this, getString(R.string.error) + " " +
                                                 res.code + ": " +res.message, Toast.LENGTH_LONG).show();

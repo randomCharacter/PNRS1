@@ -87,7 +87,24 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
                     @Override
                     public void run() {
                         try {
-                            mHTTPHelper.postJSONObjectFromURL(HTTPHelper.URL_LOGOUT, new JSONObject(), mSessionID);
+                            final HTTPHelper.HTTPResponse res = mHTTPHelper.postJSONObjectFromURL(HTTPHelper.URL_LOGOUT, new JSONObject(), mSessionID);
+                            if (res.code == HTTPHelper.CODE_SUCCESS) {
+                                mHandler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(), R.string.logged_out,
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                            } else {
+                                mHandler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(), getString(R.string.error) + " " +
+                                                res.code + ": " +res.message, Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                         } catch (JSONException e) {
@@ -106,18 +123,19 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
                     public void run() {
                         try {
                             JSONObject jsonObject = new JSONObject();
-                            jsonObject.put("receiver", mSender);
-                            jsonObject.put("data", mMessage.getText().toString());
-                            HTTPHelper.HTTPResponse response = mHTTPHelper.postJSONObjectFromURL(HTTPHelper.URL_MESSAGE_SEND, jsonObject, mSessionID);
+                            jsonObject.put(HTTPHelper.RECEIVER, mSender);
+                            jsonObject.put(HTTPHelper.DATA, mMessage.getText().toString());
+                            final HTTPHelper.HTTPResponse response = mHTTPHelper.postJSONObjectFromURL(HTTPHelper.URL_MESSAGE_SEND, jsonObject, mSessionID);
 
-                            if (response.code != HTTPHelper.SUCCESS) {
-                                mHandler.post(new Runnable(){
+                            if (response.code != HTTPHelper.CODE_SUCCESS) {
+                                mHandler.post(new Runnable() {
                                     public void run() {
-                                        Toast.makeText(MessageActivity.this, "Unable to send message", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getApplicationContext(), R.string.unable_to_send_message + "\n" +
+                                                response.message, Toast.LENGTH_LONG).show();
                                     }
                                 });
                             } else {
-                                mHandler.post(new Runnable(){
+                                mHandler.post(new Runnable() {
                                     public void run() {
                                         mMessageAdapter.addMessage(new Message(mMessage.getText().toString(), false));
                                         mMessageAdapter.notifyDataSetChanged();
@@ -127,7 +145,6 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
                                     }
                                 });
                             }
-
                         } catch (IOException e) {
                             e.printStackTrace();
                         } catch (JSONException e) {
@@ -177,7 +194,7 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
                     JSONArray jsonArray = mHTTPHelper.getJSONArrayFromURL(HTTPHelper.URL_MESSAGES +
                             mSender, mSessionID);
                     if (jsonArray == null) {
-                        Toast.makeText(MessageActivity.this, "UNKNOWN ERROR", Toast.LENGTH_LONG).show();
+                        Toast.makeText(MessageActivity.this, R.string.unknown_error, Toast.LENGTH_LONG).show();
                         Intent loginIntent = new Intent(getApplicationContext(), MainActivity.class);
                         loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(loginIntent);
