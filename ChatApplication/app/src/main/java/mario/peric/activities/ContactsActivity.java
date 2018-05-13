@@ -96,6 +96,7 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void fetchContacts() {
+        mContactAdapter.clear();
         new Thread(new Runnable() {
             @Override
             public void run() {

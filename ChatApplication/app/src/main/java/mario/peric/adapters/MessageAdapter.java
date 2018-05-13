@@ -30,6 +30,10 @@ public class MessageAdapter extends BaseAdapter implements View.OnLongClickListe
         mMessages.add(message);
     }
 
+    public void clear() {
+        mMessages.clear();
+    }
+
     @Override
     public int getCount() {
         return mMessages.size();

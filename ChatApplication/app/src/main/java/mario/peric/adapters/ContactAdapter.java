@@ -31,6 +31,10 @@ public class ContactAdapter extends BaseAdapter implements View.OnClickListener 
         mContacts.add(contact);
     }
 
+    public void clear() {
+        mContacts.clear();
+    }
+
     @Override
     public int getCount() {
         return mContacts.size();

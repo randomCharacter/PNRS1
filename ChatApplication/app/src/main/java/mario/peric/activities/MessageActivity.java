@@ -167,6 +167,7 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void fetchMessages() {
+        mMessageAdapter.clear();
         SharedPreferences sharedPref = getSharedPreferences(Preferences.NAME, Context.MODE_PRIVATE);
         mSessionID = sharedPref.getString(Preferences.SESSION_ID, null);
         new Thread(new Runnable() {
