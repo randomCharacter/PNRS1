@@ -24,11 +24,13 @@ public class HTTPHelper {
     public static final String SENDER = "sender";
     public static final String RECEIVER = "receiver";
     public static final String DATA = "data";
+    public static final String CONTACT = "contact";
 
     public static final String URL_SERVER = "http://18.205.194.168:80";
     public static final String URL_LOGIN = URL_SERVER + "/login";
     public static final String URL_REGISTER = URL_SERVER + "/register";
     public static final String URL_CONTACTS = URL_SERVER + "/contacts";
+    public static final String URL_CONTACT = URL_SERVER + "/contact/";
     public static final String URL_MESSAGES = URL_SERVER + "/message/";
     public static final String URL_MESSAGE_SEND = URL_SERVER + "/message";
     public static final String URL_LOGOUT = URL_SERVER + "/logout";
@@ -102,6 +104,40 @@ public class HTTPHelper {
         java.net.URL url = new URL(urlString);
         urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.setRequestMethod("POST");
+        urlConnection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+        urlConnection.setRequestProperty("Accept","application/json");
+        urlConnection.setRequestProperty(SESSION_ID, sessionID);
+        urlConnection.setConnectTimeout(15000);
+        urlConnection.setReadTimeout(1000);
+
+        urlConnection.setDoOutput(true);
+        urlConnection.setDoInput(true);
+        try {
+            urlConnection.connect();
+        } catch (IOException e) {
+            res.code = 404;
+            res.message = "Server unreachable";
+            return res;
+        }
+        DataOutputStream os = new DataOutputStream(urlConnection.getOutputStream());
+
+        os.writeBytes(jsonObject.toString());
+        os.flush();
+        os.close();
+        res.code =  urlConnection.getResponseCode();
+        res.message = urlConnection.getResponseMessage();
+        res.sessionId = urlConnection.getHeaderField(SESSION_ID);
+
+        urlConnection.disconnect();
+        return res;
+    }
+
+    public HTTPResponse deleteJSONObjectFromURL(String urlString, JSONObject jsonObject, String sessionID) throws IOException, JSONException {
+        HttpURLConnection urlConnection = null;
+        HTTPResponse res = new HTTPResponse();
+        java.net.URL url = new URL(urlString);
+        urlConnection = (HttpURLConnection) url.openConnection();
+        urlConnection.setRequestMethod("DELETE");
         urlConnection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
         urlConnection.setRequestProperty("Accept","application/json");
         urlConnection.setRequestProperty(SESSION_ID, sessionID);

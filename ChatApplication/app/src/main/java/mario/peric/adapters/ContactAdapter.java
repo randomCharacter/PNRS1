@@ -2,6 +2,7 @@ package mario.peric.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,22 +10,34 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
 import mario.peric.R;
 import mario.peric.activities.MessageActivity;
+import mario.peric.helpers.HTTPHelper;
 import mario.peric.models.Contact;
+import mario.peric.utils.Preferences;
 
-public class ContactAdapter extends BaseAdapter implements View.OnClickListener {
+public class ContactAdapter extends BaseAdapter implements View.OnClickListener, View.OnLongClickListener {
 
     private Context mContext;
     private ArrayList<Contact> mContacts;
+    private HTTPHelper mHttpHelper;
+    private String mSessionID;
 
     public ContactAdapter(Context context) {
         mContext = context;
         mContacts = new ArrayList<>();
+        mHttpHelper = new HTTPHelper();
+        SharedPreferences sharedPref = mContext.getSharedPreferences(Preferences.NAME, Context.MODE_PRIVATE);
+        mSessionID = sharedPref.getString(Preferences.SESSION_ID, null);
     }
 
     public void addContact(Contact contact) {
@@ -81,6 +94,9 @@ public class ContactAdapter extends BaseAdapter implements View.OnClickListener 
         holder.firstLetter.setText(contact.getUsername().substring(0, 1).toUpperCase());
         holder.fullName.setText(contact.getUsername());
         holder.buttonSend.setTag(i);
+        holder.fullName.setTag(i);
+
+        holder.fullName.setOnLongClickListener(this);
 
         return view;
     }
@@ -98,6 +114,35 @@ public class ContactAdapter extends BaseAdapter implements View.OnClickListener 
                     mContext.startActivity(intent);
                 }
                 break;
+        }
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        switch (view.getId()) {
+            case R.id.full_name:
+                int i = Integer.parseInt(view.getTag().toString());
+                final Contact contact = mContacts.get(i);
+
+                mContacts.remove(i);
+                notifyDataSetChanged();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONObject jsonObject = new JSONObject();
+                        try {
+                            final HTTPHelper.HTTPResponse res = mHttpHelper.deleteJSONObjectFromURL(HTTPHelper.URL_CONTACT + contact.getUsername(), jsonObject, mSessionID);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+                Toast.makeText(mContext, "Contact removed", Toast.LENGTH_LONG).show();
+                return true;
+            default:
+                return false;
         }
     }
 
