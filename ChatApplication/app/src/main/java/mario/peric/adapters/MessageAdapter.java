@@ -10,9 +10,14 @@ import android.widget.BaseAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
 import mario.peric.R;
+import mario.peric.helpers.HTTPHelper;
 import mario.peric.models.Message;
 import mario.peric.utils.Preferences;
 
@@ -20,10 +25,17 @@ public class MessageAdapter extends BaseAdapter implements View.OnLongClickListe
 
     private Context mContext;
     private ArrayList<Message> mMessages;
+    private HTTPHelper mHTTPHelper;
+    private String mSessionID;
+    private String mSender;
 
-    public MessageAdapter(Context context) {
+    public MessageAdapter(Context context, String sender) {
         mContext = context;
         mMessages = new ArrayList<>();
+        mHTTPHelper = new HTTPHelper();
+        SharedPreferences sharedPref = mContext.getSharedPreferences(Preferences.NAME, Context.MODE_PRIVATE);
+        mSessionID = sharedPref.getString(Preferences.SESSION_ID, null);
+        mSender = sender;
     }
 
     public void addMessage(Message message) {
@@ -95,9 +107,23 @@ public class MessageAdapter extends BaseAdapter implements View.OnLongClickListe
         switch (view.getId()) {
             case R.id.message:
                 int i = Integer.parseInt(view.getTag().toString());
-                Message message = mMessages.get(i);
+                final Message message = mMessages.get(i);
                 mMessages.remove(i);
                 notifyDataSetChanged();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONObject jsonObject = new JSONObject();
+                        try {
+                            jsonObject.put(HTTPHelper.DATA, message.getMessage());
+                            final HTTPHelper.HTTPResponse res = mHTTPHelper.deleteJSONObjectFromURL(HTTPHelper.URL_MESSAGES + mSender, jsonObject, mSessionID);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
                 return true;
             default:
                 return false;

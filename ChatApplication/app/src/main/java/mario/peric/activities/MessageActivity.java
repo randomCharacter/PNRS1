@@ -65,7 +65,7 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
         mButtonLogout.setOnClickListener(this);
         mButtonRefresh.setOnClickListener(this);
 
-        mMessageAdapter = new MessageAdapter(this);
+        mMessageAdapter = new MessageAdapter(this, mSender);
 
         ListView messages = findViewById(R.id.messages);
 

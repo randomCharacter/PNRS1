@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.logging.Handler;
 
 import mario.peric.R;
 import mario.peric.activities.MessageActivity;
@@ -31,6 +32,7 @@ public class ContactAdapter extends BaseAdapter implements View.OnClickListener,
     private ArrayList<Contact> mContacts;
     private HTTPHelper mHttpHelper;
     private String mSessionID;
+    private Handler mHandler;
 
     public ContactAdapter(Context context) {
         mContext = context;
@@ -123,14 +125,13 @@ public class ContactAdapter extends BaseAdapter implements View.OnClickListener,
             case R.id.full_name:
                 int i = Integer.parseInt(view.getTag().toString());
                 final Contact contact = mContacts.get(i);
-
                 mContacts.remove(i);
                 notifyDataSetChanged();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        JSONObject jsonObject = new JSONObject();
                         try {
+                            JSONObject jsonObject = new JSONObject();
                             final HTTPHelper.HTTPResponse res = mHttpHelper.deleteJSONObjectFromURL(HTTPHelper.URL_CONTACT + contact.getUsername(), jsonObject, mSessionID);
                         } catch (IOException e) {
                             e.printStackTrace();
