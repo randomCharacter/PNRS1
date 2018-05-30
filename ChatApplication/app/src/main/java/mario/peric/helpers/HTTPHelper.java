@@ -34,6 +34,7 @@ public class HTTPHelper {
     public static final String URL_MESSAGES = URL_SERVER + "/message/";
     public static final String URL_MESSAGE_SEND = URL_SERVER + "/message";
     public static final String URL_LOGOUT = URL_SERVER + "/logout";
+    public static final String URL_NOTIFICATION = URL_SERVER + "/getfromservice";
 
 
     public JSONArray getJSONArrayFromURL(String urlString, String sessionID) throws IOException, JSONException {
@@ -63,6 +64,38 @@ public class HTTPHelper {
         int responseCode =  urlConnection.getResponseCode();
         urlConnection.disconnect();
         return responseCode == CODE_SUCCESS ? new JSONArray(jsonString) : null;
+    }
+
+    public boolean getBooleanFromURL(String urlString, String sessionID) throws IOException, JSONException {
+        HttpURLConnection urlConnection = null;
+        java.net.URL url = new URL(URL_NOTIFICATION);
+        urlConnection = (HttpURLConnection) url.openConnection();
+
+        urlConnection.setRequestMethod("GET");
+        urlConnection.setRequestProperty("Accept", "application/json");
+        urlConnection.setReadTimeout(10000);
+        urlConnection.setConnectTimeout(15000);
+        urlConnection.setRequestProperty(SESSION_ID, sessionID);
+        try {
+            urlConnection.connect();
+        } catch (IOException e) {
+            return false;
+        }
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+        StringBuilder sb = new StringBuilder();
+
+        String line;
+        while ((line = br.readLine()) != null) {
+            sb.append(line);
+        }
+
+        br.close();
+
+        boolean response = Boolean.valueOf(sb.toString());
+
+        urlConnection.disconnect();
+        return response;
     }
 
     public HTTPResponse postJSONObjectFromURL(String urlString, JSONObject jsonObject) throws IOException, JSONException {

@@ -1,11 +1,17 @@
 package mario.peric.activities;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.RemoteException;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -17,13 +23,16 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import mario.peric.INotificationCallback;
 import mario.peric.R;
 import mario.peric.adapters.ContactAdapter;
+import mario.peric.binders.NotificationBinder;
 import mario.peric.helpers.HTTPHelper;
 import mario.peric.models.Contact;
+import mario.peric.services.NotificationService;
 import mario.peric.utils.Preferences;
 
-public class ContactsActivity extends AppCompatActivity implements View.OnClickListener {
+public class ContactsActivity extends AppCompatActivity implements View.OnClickListener, ServiceConnection {
 
     Button mButtonLogout, mButtonRefresh;
     HTTPHelper mHTTPHelper;
@@ -31,6 +40,7 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
     String mLoggedUser;
     String mSessionID;
     ContactAdapter mContactAdapter;
+    NotificationBinder mService = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +71,8 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
 
         ListView contactList = findViewById(R.id.contacts);
         contactList.setAdapter(mContactAdapter);
+
+        bindService(new Intent(ContactsActivity.this, NotificationService.class), this, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -149,4 +161,56 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         }).start();
     }
 
+    @Override
+    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+        mService = (NotificationBinder) NotificationBinder.Stub.asInterface(iBinder);
+        try {
+            mService.setCallback(new NotificationCallback());
+        } catch (RemoteException e) {
+        }
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName componentName) {
+
+    }
+
+    private class NotificationCallback extends INotificationCallback.Stub {
+
+        @Override
+        public void onCallbackCall() throws RemoteException {
+
+            final HTTPHelper mHTTPHelper = new HTTPHelper();
+            final Handler handler = new Handler();
+
+            final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), null)
+                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                    .setContentTitle(getText(R.string.app_name))
+                    .setContentText(getString(R.string.new_message))
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+            final NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+
+
+            new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        final boolean res = mHTTPHelper.getBooleanFromURL(HTTPHelper.URL_NOTIFICATION, mSessionID);
+
+                        handler.post(new Runnable() {
+                            public void run() {
+                                if (res) {
+                                    notificationManager.notify(2, mBuilder.build());
+                                }
+                            }
+                        });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+        }
+    }
 }

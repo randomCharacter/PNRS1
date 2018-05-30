@@ -46,4 +46,5 @@
     <string name="logged_out">Logged out</string>
     <string name="wrong_user_pass">Wrong username/password</string>
     <string name="username_taken">Username already taken</string>
+    <string name="new_message">You have new message(s)</string>
 </resources>
