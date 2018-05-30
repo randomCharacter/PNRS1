@@ -184,7 +184,7 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
             final Handler handler = new Handler();
 
             final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), null)
-                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                    .setSmallIcon(R.drawable.ic_notification)
                     .setContentTitle(getText(R.string.app_name))
                     .setContentText(getString(R.string.new_message))
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
