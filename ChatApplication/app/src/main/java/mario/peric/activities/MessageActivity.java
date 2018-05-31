@@ -26,6 +26,7 @@ import mario.peric.adapters.MessageAdapter;
 import mario.peric.helpers.HTTPHelper;
 import mario.peric.models.Contact;
 import mario.peric.models.Message;
+import mario.peric.utils.Encryption;
 import mario.peric.utils.Preferences;
 
 public class MessageActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
@@ -38,11 +39,14 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
     HTTPHelper mHTTPHelper;
     String mSessionID;
     Handler mHandler;
+    Encryption mEncryption;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
+
+        mEncryption = new Encryption();
 
         mHTTPHelper = new HTTPHelper();
         mHandler = new Handler();
@@ -124,7 +128,8 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
                         try {
                             JSONObject jsonObject = new JSONObject();
                             jsonObject.put(HTTPHelper.RECEIVER, mSender);
-                            jsonObject.put(HTTPHelper.DATA, mMessage.getText().toString());
+
+                            jsonObject.put(HTTPHelper.DATA, mEncryption.encrypt(mMessage.getText().toString(), mEncryption.KEY));
                             final HTTPHelper.HTTPResponse response = mHTTPHelper.postJSONObjectFromURL(HTTPHelper.URL_MESSAGE_SEND, jsonObject, mSessionID);
 
                             if (response.code != HTTPHelper.CODE_SUCCESS) {
@@ -202,7 +207,7 @@ public class MessageActivity extends AppCompatActivity implements View.OnClickLi
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
                             String sender = jsonObject.getString(HTTPHelper.SENDER);
-                            String data = jsonObject.getString(HTTPHelper.DATA);
+                            String data = mEncryption.decrypt(jsonObject.getString(HTTPHelper.DATA), Encryption.KEY);
                             Message message = new Message(data, sender.compareTo(mSender) == 0);
                             mMessageAdapter.addMessage(message);
                         }
