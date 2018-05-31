@@ -9,3 +9,5 @@ Ostatak materijala, kao i originalni tekstovi zadataka mogu se pronaći na [sajt
 - [Zadatak 2](../../releases/tag/v0.2)
 - [Zadatak 3](../../releases/tag/v0.3)
 - [Zadatak 4](../../releases/tag/v0.4)
+- [Zadatak 5](../../releases/tag/v0.5)
+- [Zadatak 6](../../releases/tag/v0.6)
