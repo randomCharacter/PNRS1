@@ -71,8 +71,7 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
 
         ListView contactList = findViewById(R.id.contacts);
         contactList.setAdapter(mContactAdapter);
-
-        //bindService(new Intent(ContactsActivity.this, NotificationService.class), this, Context.BIND_AUTO_CREATE);
+        bindService(new Intent(ContactsActivity.this, NotificationService.class), this, Context.BIND_AUTO_CREATE);
     }
 
     @Override
